@@ -1,10 +1,30 @@
+import { useState } from "react";
+
 function App() {
+  const [openSection, setOpenSection] = useState({
+    taskList: false,
+    tasks: true,
+    completedTasks: true,
+  });
+
+  function toggleSection(section) {
+    setOpenSection((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  }
+
   return (
     <div className="app">
       <div className="task-container">
         <h1>Task List with Priority</h1>
-        <button className="close-button">+</button>
-        <TaskForm />
+        <button
+          className="close-button"
+          onClick={() => toggleSection("taskList")}
+        >
+          +
+        </button>
+        {openSection.taskList && <TaskForm />}
       </div>
 
       <div className="task-container">
