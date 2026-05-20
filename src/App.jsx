@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function App() {
+  const [tasks, setTasks] = useState([]);
   const [openSection, setOpenSection] = useState({
     taskList: false,
     tasks: true,
@@ -14,6 +15,10 @@ function App() {
     }));
   }
 
+  function addTask(task) {
+    setTasks([...tasks, { ...task, completed: false, id: Date.now() }]);
+  }
+
   return (
     <div className="app">
       <div className="task-container">
@@ -24,7 +29,7 @@ function App() {
         >
           +
         </button>
-        {openSection.taskList && <TaskForm />}
+        {openSection.taskList && <TaskForm addTask={addTask} />}
       </div>
 
       <div className="task-container">
@@ -58,16 +63,36 @@ function App() {
   );
 }
 
-function TaskForm() {
+function TaskForm({ addTask }) {
+  const [title, setTitle] = useState();
+  const [priority, setPriority] = useState("Low");
+  const [deadline, setDeadline] = useState();
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    addTask({ title, priority, deadline });
+  }
+
   return (
     <form action="" className="task-form">
-      <input type="text" value={""} placeholder="Task title" required />
-      <select value={""}>
+      <input
+        type="text"
+        value={title}
+        placeholder="Task title"
+        required
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <select value={priority} onChange={(e) => setPriority(e.target.value)}>
         <option value="High">High</option>
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </select>
-      <input type="datetime-local" value={""} required />
+      <input
+        type="datetime-local"
+        value={deadline}
+        required
+        onChange={(e) => setDeadline(e.target.value)}
+      />
       <button type="submit">Add Task</button>
     </form>
   );
