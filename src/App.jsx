@@ -70,11 +70,16 @@ function TaskForm({ addTask }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    addTask({ title, priority, deadline });
+    if (title.trim() && deadline) {
+      addTask({ title, priority, deadline });
+      setTitle("");
+      setPriority("Low");
+      setDeadline("");
+    }
   }
 
   return (
-    <form action="" className="task-form">
+    <form action="" className="task-form" onSubmit={handleSubmit}>
       <input
         type="text"
         value={title}
