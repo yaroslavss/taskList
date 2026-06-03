@@ -1,4 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+/*Rus
+//Задача:
+//Добавьте функционал, который будет отслеживать, просрочена ли задача.
+//Для отображения просроченной задачи добавьте к задаче класс overdue.
+
+//ПОДРОБНЕЕ С ПОДСКАЗКАМИ:
+//1 — Создайте состояние, которое отслеживает текущее время.
+//2 — Создайте side effect, который будет обновлять состояние текущего времени каждую секунду.
+//3 — Передайте динамически состояние, которое отслеживает текущее время, в компонент TaskItem (если deadline < текущее время, то true).
+//4 — Добавьте элементу <li className="task-item"></li> класс overdue при условии, что deadline прошел.
+*/
+
+/*Eng
+//Task:
+//Add functionality to track whether a task is overdue.
+//To display overdue tasks, add the class "overdue" to the task.
+
+//DETAILS WITH HINTS:
+//1 — Create a state that tracks the current time.
+//2 — Create a side effect that updates the current time state every second.
+//3 — Dynamically pass the state that tracks the current time to the TaskItem component (if deadline < current time, then true).
+//4 — Add the "overdue" class to the <li className="task-item"></li> element if the deadline has passed.
+
+*/
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -9,6 +34,14 @@ function App() {
     tasks: true,
     completedTasks: true,
   });
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   function toggleSection(section) {
     setOpenSection((prev) => ({
@@ -103,6 +136,7 @@ function App() {
             activeTasks={activeTasks}
             completeTask={completeTask}
             deleteTask={deleteTask}
+            currentTime={currentTime}
           />
         )}
       </div>
@@ -168,7 +202,7 @@ function TaskForm({ addTask }) {
   );
 }
 
-function TaskList({ activeTasks, completeTask, deleteTask }) {
+function TaskList({ activeTasks, completeTask, deleteTask, currentTime }) {
   return (
     <ul className="task-list">
       {activeTasks.map((task) => (
@@ -177,6 +211,7 @@ function TaskList({ activeTasks, completeTask, deleteTask }) {
           completeTask={completeTask}
           deleteTask={deleteTask}
           key={task.id}
+          isOverdue={new Date(task.deadline) < currentTime}
         />
       ))}
     </ul>
@@ -193,16 +228,20 @@ function CompletedTaskList({ completedTasks, deleteTask }) {
   );
 }
 
-function TaskItem({ task, completeTask, deleteTask }) {
+function TaskItem({ task, completeTask, deleteTask, isOverdue }) {
   const { title, priority, deadline, id, completed } = task || {};
 
   return (
-    <li className={`task-item ${priority.toLowerCase()}`}>
+    <li
+      className={`task-item ${priority.toLowerCase()} ${isOverdue ? "overdue" : ""}`}
+    >
       <div className="task-info">
         <div>
           {title} <strong>{priority}</strong>
         </div>
-        <div className="task-deadline">Due: {deadline}</div>
+        <div className="task-deadline">
+          Due: {new Date(deadline).toLocaleString()}
+        </div>
       </div>
       <div className="task-buttons">
         {!completed && (
